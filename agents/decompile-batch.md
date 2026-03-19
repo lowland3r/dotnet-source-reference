@@ -14,7 +14,7 @@ Use the `ilspy-runner` skill for all ilspycmd invocations.
 For each assembly in the batch:
 
 1. Resolve the full path: `<profile_dir>/<assembly.path>`
-2. Check if `<assembly.name>.decompiled.cs` already exists alongside the assembly. If it does and is non-empty and contains at least one `namespace` or `class` declaration: **skip** (already decompiled), set status to "success".
+2. Check if `<assembly.name>.decompiled.cs` already exists in the same directory as the resolved assembly path. If it does and is non-empty and contains at least one `namespace` or `class` declaration: **skip** (already decompiled), set status to `"skipped"` and set `decompile_output` to the existing file path. Do not invoke ilspycmd.
 3. Run ilspycmd using the `-o` flag with an explicit output file path (NOT `--outputdir` which writes a directory tree):
    `ilspycmd "<full-path>" -o "<directory-of-assembly>/<AssemblyNameWithoutExtension>.decompiled.cs"`
    Example: for `source/main/MyAssembly.dll` → `ilspycmd "source/main/MyAssembly.dll" -o "source/main/MyAssembly.decompiled.cs"`
@@ -38,6 +38,11 @@ Return a JSON result record for each assembly:
   }
 ]
 ```
+
+Field values by status:
+- `decompile_status: "success"` → `decompile_output`: path to the `.decompiled.cs` file; `decompile_errors`: `[]`
+- `decompile_status: "skipped"` → `decompile_output`: path to the pre-existing `.decompiled.cs` file; `decompile_errors`: `[]`
+- `decompile_status: "failed"` → `decompile_output`: `null`; `decompile_errors`: array of error strings from ilspycmd output
 
 After processing all assemblies in the batch, output the complete JSON result array. The calling `decompile` command will merge these results into `classification-manifest.json`.
 

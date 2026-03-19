@@ -19,8 +19,10 @@ Note: both DLL files are zero-byte stubs — ilspycmd will fail on them.
 
 ## Test Case B: pre-existing .decompiled.cs
 If FakeSuite.decompiled.cs already exists alongside the DLL and is non-empty with a namespace declaration:
-- Agent should skip ilspycmd for that assembly
+- Agent must NOT invoke ilspycmd for that assembly
 - decompile_status: "skipped"
+- decompile_output: path to the pre-existing FakeSuite.decompiled.cs file
+- decompile_errors: []
 
 ## Pass Criteria
 - Returns JSON array (not a hard stop) even when all assemblies fail
