@@ -1,0 +1,62 @@
+{
+  "suite_name": "Made2Manage ERP",
+  "components": [
+    {
+      "name": "erpserver",
+      "path": "../../source-m2merpserver"
+    },
+    {
+      "name": "webapi",
+      "path": "../../source-m2mwebapi"
+    },
+    {
+      "name": "idserver",
+      "path": "../../source-m2midserver"
+    }
+  ],
+  "known_suite_patterns": [
+    "M2M*",
+    "Aptean.*",
+    "Consona.*",
+    "Notification*",
+    "BDLBase*",
+    "PSDomain*",
+    "ErrorAndValidationResponseHandler*",
+    "SMSIntegration*",
+    "Reporting*",
+    "M2MApteanCRM*",
+    "M2MEcommerce*",
+    "IdentityModel*"
+  ],
+  "known_third_party_patterns": [
+    "Newtonsoft.*",
+    "Microsoft.*",
+    "System.*",
+    "DevExpress.*",
+    "DocumentFormat.*",
+    "Serilog.*",
+    "IdentityServer*",
+    "Owin.*",
+    "Unity.*",
+    "RestSharp*",
+    "MailKit*",
+    "MimeKit*",
+    "PayPal*",
+    "Stripe.*",
+    "AuthorizeNet*",
+    "Twilio*",
+    "CefSharp.*",
+    "Google.*",
+    "GraphQL.*",
+    "Azure.*",
+    "Hyak.*",
+    "Std.UriTemplate*",
+    "CloudPrinter.*",
+    "BouncyCastle.*"
+  ],
+  "unknown_default": "decompile",
+  "decompile_parallel_threshold": 10,
+  "index_output_path": "../../.github/agents/reference",
+  "context_output_path": "../../.github/agents/context",
+  "version_prompt": "What version of Made2Manage is installed? (e.g. 8.7.x)"
+}
