@@ -74,4 +74,4 @@ If any failed, list assembly names and error messages.
 
 - Context generation does not depend on the "prune" stage; it processes all successfully decompiled and classified assemblies
 - Both relevant and irrelevant assemblies are processed; context-distiller handles the distinction
-- The `.ctx.md` files are written by the context-distiller agent to the path specified in the profile under `context_output_path`
+- The `.ctx.md` files are written by the context-distiller agent to the path specified in the profile under `context_output_path`. Relative paths in `context_output_path` are resolved relative to the directory containing the profile file.

@@ -11,7 +11,7 @@ Manifest (classification-manifest.json) has:
   - `db_tables: ["ordertable", "orderline"]`
   - `primary_purpose: "Manages orders and their related business logic"`
   - `cross_component_relationships: []` (empty or null)
-- `Newtonsoft.Json.dll` → `classification: "third_party"`, no `decompile_status`, no `classifier_results` entry (should be skipped — not in classifier_results)
+- `Newtonsoft.Json.dll` → not present in `assemblies[]` (third-party assemblies are deleted by pre-classify and never recorded in this array; therefore it is implicitly skipped by generate-context)
 - `completed_stages` includes `"review-drop"`
 
 The decompiled source file exists and contains valid C# code.
@@ -31,7 +31,7 @@ No existing context output directory exists.
    - `# FakeSuite` heading
    - `## Summary` section with prose description
    - `## Public API` section documenting the key types
-   - `## SQL / DB Usage` section documenting SQL patterns for ordertable and orderline
+   - `## SQL / DB Usage` section present: `ordertable` has SELECT and INSERT SQL literals from the source; `orderline` has a stub line "No direct SQL literals found." (the fixture contains no SQL string literals for orderline)
    - No `## Cross-Component References` section (relationships list is empty)
 
 ## Test Case A: Normal run with one relevant assembly
@@ -53,7 +53,7 @@ Pass criteria:
 
 ## Test Case B: Assembly marked as not relevant
 
-Modify the classifier_result for FakeSuite.dll: set `relevant: false`
+Modify the manifest: in `classifier_results["FakeSuite.dll"]`, set `relevant: false`.
 
 Expected behavior:
 - Context-distiller is still dispatched (relevant and irrelevant assemblies are both processed)
