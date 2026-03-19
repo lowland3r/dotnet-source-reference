@@ -4,6 +4,7 @@ Assess the relevance of a decompiled .NET assembly for API and business logic do
 
 ## Inputs (provided by the calling command)
 - `assembly_name`: filename of the assembly (e.g., "OrderManager.dll")
+- `component`: component name this assembly belongs to (e.g., "main")
 - `decompiled_source`: full text of the `.decompiled.cs` file
 - `all_component_sources`: a list of `{ name, component, decompiled_source }` for all other retained assemblies (for cross-component analysis)
 - `profile`: the suite profile JSON
@@ -31,12 +32,17 @@ Describe what this assembly does and why it exists.
 
 **3. Key public types** (list up to 8)
 The most important public classes and interfaces a developer would interact with. Include the type name and a 5-10 word description.
+Write each description from a developer's perspective: describe the type's role and what a caller uses it for. Avoid restating the class name. Avoid describing implementation details. Aim for 5-10 words.
 
 **4. DB tables touched** (list)
 Scan the source for SQL string literals, parameterized query patterns, and ORM mappings. Extract table names. If none found, return an empty list.
+Normalise all table names: lowercase, deduplicate, strip schema prefixes (e.g., `dbo.ordertable` → `ordertable`), and remove square-bracket quoting (e.g., `[OrderTable]` → `ordertable`).
 
 **5. Cross-component relationships** (list)
-Check `all_component_sources` for references to this assembly's types. Note which other assemblies reference or are referenced by this assembly.
+Analyze both directions:
+- **Inbound:** Scan each entry in `all_component_sources` for references to namespaces or types from `assembly_name`. Note which assemblies reference this assembly's types.
+- **Outbound:** Scan `decompiled_source` for references to namespaces or types from other entries in `all_component_sources`. Note which assemblies this assembly calls into.
+Format each relationship as a short string describing the dependency direction and purpose.
 
 **6. Confidence score** (0.0–1.0)
 How confident are you in the relevance determination? Below 0.7 → flag as "Review needed".
