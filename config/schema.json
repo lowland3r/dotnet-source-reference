@@ -1,0 +1,57 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "dotnet-source-reference Suite Profile",
+  "type": "object",
+  "required": ["suite_name", "components", "known_suite_patterns", "known_third_party_patterns", "index_output_path", "context_output_path"],
+  "properties": {
+    "suite_name": {
+      "type": "string",
+      "description": "Human-readable name of the software suite"
+    },
+    "components": {
+      "type": "array",
+      "description": "Source component folders to process together",
+      "items": {
+        "type": "object",
+        "required": ["name", "path"],
+        "properties": {
+          "name": { "type": "string" },
+          "path": { "type": "string", "description": "Path relative to the directory containing this profile file" }
+        }
+      }
+    },
+    "known_suite_patterns": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Glob patterns matching suite-owned assembly names (e.g. 'MyApp.*')"
+    },
+    "known_third_party_patterns": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Glob patterns matching known third-party assembly names (e.g. 'Newtonsoft.*')"
+    },
+    "unknown_default": {
+      "type": "string",
+      "enum": ["decompile", "skip"],
+      "default": "decompile",
+      "description": "Default action for assemblies that match neither suite nor third-party patterns"
+    },
+    "decompile_parallel_threshold": {
+      "type": "integer",
+      "default": 10,
+      "description": "Number of passing assemblies above which decompilation splits into parallel batches"
+    },
+    "index_output_path": {
+      "type": "string",
+      "description": "Path (relative to profile directory) where index-<component>.md files are written"
+    },
+    "context_output_path": {
+      "type": "string",
+      "description": "Path (relative to profile directory) where <component>/<assembly>.ctx.md files are written"
+    },
+    "version_prompt": {
+      "type": "string",
+      "description": "Question to ask the user for the version/release label when running process-drop"
+    }
+  }
+}
