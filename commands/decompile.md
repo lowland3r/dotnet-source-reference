@@ -19,7 +19,7 @@ If `classification-manifest.json` does not exist: hard stop with "Run /pre-class
 From `assemblies[]`: collect entries where `classification: "suite"` and `decompile_status: "pending"`.
 From `unknowns[]`: collect entries where `user_classification: "suite"` or `user_classification: "decompile"`.
 
-If this list is empty: output "Nothing to decompile — all suite assemblies already processed." and exit.
+If this list is empty: output "Nothing to decompile — all suite assemblies already processed." and exit successfully.
 
 ### 3. Check ilspycmd
 
@@ -30,13 +30,16 @@ Run `dotnet tool list -g`. If `ilspycmd` is not present: hard stop with "ilspycm
 Count the assemblies to decompile. Compare against `decompile_parallel_threshold` from the profile (default: 10).
 
 - **Sequential (count ≤ threshold):** Use the `ilspy-runner` skill to decompile each assembly directly.
-- **Parallel (count > threshold):** Partition assemblies into batches of `ceil(count / N)` where N is `ceil(count / threshold)`. Dispatch one `decompile-batch` subagent per batch in parallel. Wait for all batches to complete and collect their JSON result arrays.
+- **Parallel (count > threshold):** Compute batch count N = `ceil(count / threshold)`. Partition assemblies into N batches of `ceil(count / N)` assemblies each. Dispatch one `decompile-batch` subagent per batch in parallel. Wait for all batches to complete and collect their JSON result arrays.
 
 ### 5. Update manifest
 
 For each result returned (sequential or from batches):
 - Update the matching entry in `assemblies[]` (or `unknowns[]`) with `decompile_status`, `decompile_output`, and `decompile_errors`.
-- Add "decompile" to `completed_stages`.
+  - On success: `decompile_output` = path to `.decompiled.cs`; `decompile_errors` = `[]`
+  - On failure: `decompile_output` = `null`; `decompile_errors` = array of error strings
+
+After all results are processed, add `"decompile"` to `completed_stages` (once, not per assembly).
 
 Write the updated manifest back to disk.
 

@@ -5,7 +5,7 @@ Profile: `tests/fixtures/minimal-suite/test-profile.json`
 Pre-existing manifest: a `classification-manifest.json` where:
 - `FakeSuite.dll` → classification: "suite", decompile_status: "pending"
 - `Newtonsoft.Json.dll` → classification: "third_party", decompile_status: "skipped"
-- `Unknown.Library.dll` → unknowns → user_classification: "skip"
+- `Unknown.Library.dll` → unknowns → user_classification: "skip" (excluded at Step 2 collection — not "suite" or "decompile")
 
 Note: `FakeSuite.dll` is a zero-byte stub — ilspycmd will fail on it.
 
@@ -15,7 +15,14 @@ Note: `FakeSuite.dll` is a zero-byte stub — ilspycmd will fail on it.
 2. ilspycmd fails on the zero-byte stub (expected)
 3. Failure is logged to `decompile_errors` in the manifest
 4. `decompile_status` is updated to "failed" for FakeSuite.dll
-5. Summary is shown: "1 assembly decompiled, 0 succeeded, 1 failed"
+5. Summary is shown in the format:
+   ```
+   Decompilation complete.
+     Total attempted: 1
+     Succeeded: 0
+     Failed: 1  (see classification-manifest.json for details)
+     Skipped (already done): 0
+   ```
 6. `completed_stages` now includes "decompile"
 7. Process does NOT abort — failure is surfaced as a summary
 
