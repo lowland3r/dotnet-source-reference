@@ -8,3 +8,6 @@ Thumbs.db
 
 # Test output artifacts
 tests/fixtures/**/output/
+
+# Local Claude settings (contains secrets)
+.claude/settings.local.json
