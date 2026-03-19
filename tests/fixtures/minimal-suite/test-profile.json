@@ -1,0 +1,13 @@
+{
+  "suite_name": "Fake Test Suite",
+  "components": [
+    { "name": "main", "path": "." }
+  ],
+  "known_suite_patterns": ["FakeSuite*", "FakeCore*"],
+  "known_third_party_patterns": ["Newtonsoft.*", "Microsoft.*", "System.*"],
+  "unknown_default": "decompile",
+  "decompile_parallel_threshold": 10,
+  "index_output_path": "output/reference",
+  "context_output_path": "output/context",
+  "version_prompt": "What test version is this?"
+}
