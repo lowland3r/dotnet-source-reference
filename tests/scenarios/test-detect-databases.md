@@ -42,7 +42,7 @@ The manifest's `completed_stages` must include `"review-drop"`.
 ### Setup
 
 - Manifest contains classifier_results for a single assembly with mixed-case and prefixed table names:
-  - `db_tables: ["dbo.OrderTable", "[orderline]", "ordertable"]`
+  - `db_tables: ["dbo.OrderTable", "[orderline]", "ordertable", "dbo.[OrderTable]"]`
 
 ### Expected Behavior
 
@@ -83,16 +83,20 @@ The manifest's `completed_stages` must include `"review-drop"`.
 
 ### Setup
 
-- Manifest exists but `classifier_results` field is missing or an empty object `{}`
+**Scenarios**:
+- Scenario D1: Manifest exists but has no `classifier_results` key at all
+- Scenario D2: Manifest exists and has `classifier_results: []` (empty array — review-drop never ran or produced no results)
 
 ### Expected Behavior
 
 - Command hard stops with message: "Run /review-drop before /detect-databases — no classifier results found."
 - No output files are written
+- Both scenarios result in the same hard-stop behavior
 
 ### Pass Criteria
 
-- Missing/empty classifier_results triggers hard stop before any output
+- Missing `classifier_results` key triggers hard stop before any output
+- Empty `classifier_results` array (empty results) triggers hard stop before any output
 
 ## Test Case E: Missing manifest
 

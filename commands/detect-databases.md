@@ -21,11 +21,13 @@ If `classifier_results` is absent or empty: hard stop with "Run /review-drop bef
 
 For each entry in `classifier_results`, collect all values from the `db_tables` array.
 
-For each table name found, apply normalisation:
-- Convert to lowercase
-- Strip schema prefixes: `dbo.ordertable` → `ordertable`, `schema.table` → `table`
-- Strip square-bracket quoting: `[OrderTable]` → `ordertable`
-- Deduplicate exact matches after normalisation
+For each table name found, apply normalisation in the following order:
+1. Strip any schema prefix: remove everything up to and including the first `.` (handles `dbo.Table`, `schema.Table`, `dbo.[Table]`)
+2. Strip surrounding square brackets: remove `[` and `]` if present
+3. Lowercase the result
+4. After applying these rules, deduplicate exact matches
+
+Examples: `dbo.OrderTable` → `ordertable`, `[orderline]` → `orderline`, `schema.table` → `table`, `dbo.[OrderTable]` → `ordertable`
 
 Track which assemblies reference each normalised table name. For each unique normalised table, maintain a list of assembly names (the `assembly_name` key from `classifier_results` entries).
 
@@ -56,7 +58,7 @@ Write `db-detection.json` to the directory containing the manifest (same directo
 - `total_unique_tables`: count of unique normalised table names
 - `generated`: today's date in YYYY-MM-DD format
 
-Sort the `detected_tables` array by `table` name (case-insensitive alphabetically).
+Sort the `detected_tables` array by `table` name (case-insensitive alphabetically). Within each object's `referenced_by` array, sort alphabetically (ascending) by assembly filename.
 
 If no tables are found after aggregation and normalisation (all assemblies have empty or missing `db_tables`): write `db-detection.json` with `detected_tables: []` and `total_unique_tables: 0`. This is not an error condition.
 
@@ -77,6 +79,10 @@ Database detection complete.
 
 - N is the value of `total_unique_tables`
 - M is the count of distinct assemblies across all `referenced_by` lists
+
+## Notes
+
+- `db-detection.json` is a discovery summary for human reference. It is not the input to `/ingest-schema`. The `/ingest-schema` command reads `schema-enrichment.json`, which is produced by a separate companion schema extraction tool.
 
 ## Error handling
 
