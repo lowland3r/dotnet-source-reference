@@ -153,7 +153,7 @@ namespace StringHelper {
   ...
   "cross_component_relationships": [
     "Referenced by FakeApi.dll — uses OrderManager",
-    "References Consona.Data for ORM utilities"
+    "References DataAccess.Common for ORM utilities"
   ]
 }
 ```
@@ -162,7 +162,7 @@ namespace StringHelper {
 
 1. **Cross-Component References section**: PRESENT with two bullet points:
    - "Referenced by FakeApi.dll — uses OrderManager"
-   - "References Consona.Data for ORM utilities"
+   - "References DataAccess.Common for ORM utilities"
 
 2. All other sections remain as in Test Case A.
 
