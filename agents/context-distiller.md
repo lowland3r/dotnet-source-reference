@@ -12,14 +12,14 @@ Distill a single decompiled C# source file into a focused, LLM-optimized context
 
 ## Output
 
-Write a `.ctx.md` file to `<context_output_path>/<component>/<assembly_stem>.ctx.md` and return a JSON result:
+Write a `.ctx.md` file to `<context_output_path>/<component>/<assembly_stem>.ctx.md` and return a JSON result. `context_output_path` is the value of `profile.context_output_path`.
 
 ```json
 {
   "assembly_name": "FakeSuite.dll",
   "ctx_path": "<absolute or profile-relative path to written file>",
   "status": "ok" | "error",
-  "error": "<error message if status is error>"
+  "error": "<error message; omit this field when status is ok>"
 }
 ```
 
@@ -58,7 +58,7 @@ db_tables:
 
 ### 2. Assembly Name Heading
 
-A single `# <AssemblyName>` heading using the assembly stem (filename without `.dll` extension), with basic title-casing applied if possible.
+A single `# <AssemblyName>` heading using the assembly stem (filename without extension) verbatim, preserving its original casing.
 
 Example: "FakeSuite" for FakeSuite.dll.
 
@@ -74,7 +74,7 @@ Derive this from:
 - `classifier_result.cross_component_relationships` (if non-empty)
 
 **If the assembly is marked not relevant** (`classifier_result.relevant` is false):
-- Write **only** the front-matter block and a one-line Summary: "Marked as not relevant to suite business logic."
+- Write **only**: the front-matter block, the `# <AssemblyName>` heading, and a `## Summary` section containing a single line: "Marked as not relevant to suite business logic."
 - Omit all other sections (`## Public API`, `## SQL / DB Usage`, `## Cross-Component References`).
 - Exit early; do not process remaining sections.
 
@@ -143,6 +143,8 @@ INSERT INTO ordertable (fcorderid, fccustid, fcstatus) VALUES (@id, @cust, @stat
 Mapped via ORM; no direct SQL literals found.
 ```
 
+For each table in `classifier_result.db_tables`, include a subsection. Use the actual SQL string literals from the source if present. If no SQL literals are found in the source for a given table, write a single descriptive line: "No direct SQL literals found."
+
 **Omit this section entirely if `classifier_result.db_tables` is empty.**
 
 ### 6. Cross-Component References Section
@@ -169,7 +171,7 @@ Format:
    ```
 
 2. **Handle irrelevant assemblies**: If `classifier_result.relevant` is false:
-   - Write the `.ctx.md` file with front-matter and one-line Summary only
+   - Write the `.ctx.md` file with: front-matter block, `# <AssemblyName>` heading, and `## Summary` section containing one line: "Marked as not relevant to suite business logic."
    - Omit all other sections
    - Return `status: "ok"` with the file path
 

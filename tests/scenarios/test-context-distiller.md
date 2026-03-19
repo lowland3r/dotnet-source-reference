@@ -66,17 +66,20 @@ All test cases use these inputs:
    {
      "assembly_name": "FakeSuite.dll",
      "ctx_path": "<absolute or relative path to .ctx.md file>",
-     "status": "ok",
-     "error": null
+     "status": "ok"
    }
    ```
-   (error field may be omitted or null when status is "ok")
+   (error field is omitted when status is "ok")
 
 ---
 
 ## Test Case B: Irrelevant Assembly
 
-**Inputs**: Use setup but with `classifier_result.relevant: false`.
+**Inputs**: Override the shared setup with the following:
+- `assembly_name`: "StringHelper.dll"
+- `component`: "utilities"
+- `classifier_result`: (see below — `relevant: false`)
+- `decompiled_source`: (see inline source below)
 
 Example classifier_result:
 ```json
@@ -143,7 +146,7 @@ namespace StringHelper {
 
 ## Test Case D: Assembly with Cross-Component References
 
-**Inputs**: Use setup but with a non-empty `cross_component_relationships` list:
+**Inputs**: Reuse `FakeSuite.decompiled.cs` as `decompiled_source` (same as Test Case A). Override `cross_component_relationships` in the classifier_result with a non-empty list:
 
 ```json
 {
@@ -175,6 +178,7 @@ Example classifier_result:
   "assembly": "ConfigModel.dll",
   "component": "main",
   "relevant": true,
+  "confidence": 0.92,
   "primary_purpose": "Configuration model for the suite",
   "key_public_types": [
     { "name": "SuiteConfig", "description": "Root configuration object" }
@@ -208,7 +212,7 @@ Example classifier_result:
 - Heading uses correct assembly name
 - Summary is non-empty prose (2+ sentences)
 - Public API section documents OrderManager and IOrderRepository
-- SQL / DB Usage section contains SELECT and INSERT queries for ordertable and orderline
+- SQL / DB Usage section is present; ordertable has SELECT and INSERT query literals from the source; orderline has a stub line noting no direct SQL literals found
 - Cross-Component References section is ABSENT
 - status: "ok"
 
