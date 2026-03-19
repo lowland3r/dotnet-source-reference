@@ -36,7 +36,7 @@ Always capture stderr alongside stdout. A non-zero exit code from ilspycmd indic
 Common failure modes:
 - "Unable to find assembly" — the path is wrong or the file is not a valid .NET assembly
 - "Not a valid PE file" — the file is not a .NET assembly (may be a native DLL, data file, etc.)
-- Truncated output / partial `.decompiled.cs` — treat as failure; delete partial output
+- Truncated output / partial `.decompiled.cs` — detected by the Output Validation checks below (file empty or missing `namespace`/`class`); treat as failure and delete the partial output file
 
 ## Output Validation
 

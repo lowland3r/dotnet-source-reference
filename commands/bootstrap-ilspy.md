@@ -4,10 +4,11 @@ Check whether ilspycmd is installed and install it if not.
 
 ## Steps
 
-1. Run the following command and capture its output:
+1. Run the following command and capture its output (stdout + stderr) and exit code:
    ```
    dotnet tool list -g
    ```
+   If the shell reports that `dotnet` cannot be found (e.g., "command not found", "not recognized as a command", or the process fails to launch), treat this as the "dotnet not on PATH" case and proceed to step 2.
 
 2. **If `dotnet` is not found on PATH:**
    Hard stop. Output exactly:
