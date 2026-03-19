@@ -42,12 +42,12 @@ Unknown assemblies found (matched neither suite nor third-party patterns):
   1. Unknown.Library.dll (component: main)
   2. ...
 
-For each, enter: [s]uite, [k]ip, or [d]ecompile (same as suite):
+For each, enter: [s]uite, s[k]ip, or [d]ecompile (treat same as suite):
 ```
 
-Wait for the user to respond for each unknown. Record their decisions.
-
-If `unknown_default` in the profile is `"skip"` and the user does not respond, default to skip.
+Record the user's decision for each unknown. If the user does not provide a decision for an unknown:
+- If `unknown_default` in the profile is `"skip"`: default to skip
+- If `unknown_default` in the profile is `"decompile"`: default to decompile (treat as suite)
 
 ### 6. Write classification-manifest.json
 
@@ -85,7 +85,9 @@ Schema:
 }
 ```
 
-- `assemblies[]` contains all suite-classified and third-party files — recorded at the assembly (`.dll`/`.exe`) level only. Associated `.pdb` and `.xml` files deleted alongside a third-party assembly are not individually recorded in the manifest; they are tracked implicitly (same base name as the deleted assembly). The deletion count reported in the summary includes `.pdb`/`.xml` files for transparency.
+Note: the `decompile_output` and `decompile_errors` fields in `assemblies[]` are initially null/empty — they are populated by the `decompile` command.
+
+- `assemblies[]` contains all suite-classified and third-party files, PLUS all unknowns that the user resolved to "suite" or "decompile". These resolved unknowns are recorded in assemblies[] with classification: "suite" and decompile_status: "pending", in addition to appearing in unknowns[] with their user_classification. Entries are recorded at the assembly (`.dll`/`.exe`) level only. Associated `.pdb` and `.xml` files deleted alongside a third-party assembly are not individually recorded in the manifest; they are tracked implicitly (same base name as the deleted assembly). The deletion count reported in the summary includes `.pdb`/`.xml` files for transparency.
 - `unknowns[]` contains files with neither pattern; `user_classification` is the resolved decision
 - `decompile_status` for third-party and skip entries is `"skipped"`; for suite entries is `"pending"`
 - `classifier_results` is populated by `review-drop` — keyed by assembly filename, value is the full JSON result from `assembly-classifier`. Downstream stages (`generate-context`) read from here instead of parsing the markdown index table, avoiding fragile text parsing. Example entry:
