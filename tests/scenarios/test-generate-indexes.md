@@ -60,7 +60,7 @@ The fixture directory exists and contains the minimal-suite profile and decompil
    Index generation complete.
      Components: 1
      Assemblies indexed: 1
-     Index files written: tests/fixtures/minimal-suite/output/index-main.md
+     Index files written: tests/fixtures/minimal-suite/output/reference/index-main.md
    ```
 
 **Pass criteria:**
@@ -182,32 +182,23 @@ The fixture directory exists and contains the minimal-suite profile and decompil
 - Irrelevant assembly row correctly shows false/No values
 - Empty lists leave columns blank
 
-## Test Case H: Third-party assembly in classifier_results
+## Test Case H: Third-party assembly row
 
-**Setup:**
-- Manifest `assemblies[]` includes a third-party assembly:
-  - `Newtonsoft.Json.dll`, `classification: "third_party"`
-- Manifest `classifier_results` includes an entry for `"Newtonsoft.Json.dll"`:
-  - `component: "main"`
-  - (other fields may be present but are not used for third-party rows)
+Add to the manifest's `assemblies[]`: `Newtonsoft.Json.dll` with `classification: "third_party"`, `component: "main"`, `decompile_status: "skipped"`. **No entry for Newtonsoft.Json.dll exists in `classifier_results`** (assembly-classifier is never run for third-party assemblies).
 
-**Expected behavior:**
-1. Index file includes a row for Newtonsoft.Json.dll with:
-   - File / Folder: `Newtonsoft.Json.dll` (no `.decompiled.cs` suffix)
-   - Description: `Third-party library`
-   - API/Business Logic Relevant: `false`
-   - Primary Language: (blank)
-   - Key Public Types: (blank)
-   - DB Tables: (blank)
-   - First Indexed: today's date (or preserved if existing row)
-   - First Indexed Commit: git SHA or empty (or preserved if existing row)
-   - Stored in repo: `No (third-party)`
-2. Summary shows: Assemblies indexed: 2 (FakeSuite + Newtonsoft.Json)
+Expected behavior:
+- A row for `Newtonsoft.Json.dll` appears in `index-main.md` with:
+  - File / Folder: `Newtonsoft.Json.dll`
+  - Description: "Third-party library"
+  - API/Business Logic Relevant: false
+  - Stored in repo: "No (third-party)"
+  - Primary Language, Key Public Types, DB Tables: blank
+- The row does not require a `classifier_results` entry
 
-**Pass criteria:**
-- Third-party assembly row has correct format
-- Stored in repo column shows "No (third-party)"
-- Does not attempt to parse classifier_result fields for third-party rows
+Pass criteria:
+- Third-party row present in index without requiring classifier_results entry
+- Stored in repo: No (third-party) for third-party assemblies
+- No error or warning for absence of classifier_results entry
 
 ## Test Case I: Assembly in classifier_results but missing from manifest.assemblies
 

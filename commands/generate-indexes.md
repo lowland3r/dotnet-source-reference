@@ -38,9 +38,20 @@ For each component defined in the profile:
 
 #### 4a. Collect assemblies for this component
 
-From `classifier_results` in the manifest:
-- Collect all entries whose `component` field matches this component name
-- Also include rows from manifest's `assemblies[]` where `classification` is `"third_party"` and the assembly name appears as a key in `classifier_results` (if any)
+Build two lists:
+
+**Suite assemblies**: From `manifest.assemblies[]`, collect entries where:
+- `classification` is `"suite"` (or user-reclassified to suite)
+- The assembly's `component` field matches the current component name
+- The assembly name exists as a key in `manifest.classifier_results`
+
+For each suite assembly, retrieve its classifier result from `manifest.classifier_results[assembly_name]`.
+
+**Third-party assemblies**: From `manifest.assemblies[]`, collect entries where:
+- `classification` is `"third_party"`
+- The assembly's `component` field matches the current component name (or component is absent — assign to the default component if the profile has only one)
+
+Third-party assemblies do not have classifier_results entries; they are handled separately in Step 4b.
 
 #### 4b. Build index rows
 
@@ -51,7 +62,9 @@ For each assembly, construct a row using the 9-column format:
 
 **For suite assemblies (from classifier_results):**
 
-- **File / Folder**: Extract from the manifest entry's `decompile_output` field; use the basename (e.g., "FakeSuite.decompiled.cs")
+Note: When regenerating an existing index row, all columns except `First Indexed`, `First Indexed Commit`, and `Stored in repo` are refreshed from the current `classifier_result`. This differs from `review-drop`, which only updates `Key Public Types` and `DB Tables` on existing rows. `generate-indexes` performs a full column refresh.
+
+- **File / Folder**: Extract from the manifest entry's `decompile_output` field; use the basename (e.g., "FakeSuite.decompiled.cs"). If `decompile_output` is null or empty, fall back to using the assembly's DLL filename (assembly_name) and log a warning: "Assembly {name}: decompile_output not set, using assembly name as fallback."
 - **Description**: Use `classifier_result.primary_purpose`. If `classifier_result.review_needed` is true, append " (Review needed)".
 - **API/Business Logic Relevant**: Use `classifier_result.relevant` (true/false)
 - **Primary Language**: Always "C#"
@@ -121,6 +134,10 @@ File format:
 
 <relationships>
 ```
+
+### 6b. Update manifest
+
+Add `"generate-indexes"` to `completed_stages` in the manifest. Write the updated manifest back to disk.
 
 ### 7. Report summary
 
