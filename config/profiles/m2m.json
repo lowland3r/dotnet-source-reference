@@ -25,8 +25,7 @@
     "SMSIntegration*",
     "Reporting*",
     "M2MApteanCRM*",
-    "M2MEcommerce*",
-    "IdentityModel*"
+    "M2MEcommerce*"
   ],
   "known_third_party_patterns": [
     "Newtonsoft.*",
@@ -52,7 +51,9 @@
     "Hyak.*",
     "Std.UriTemplate*",
     "CloudPrinter.*",
-    "BouncyCastle.*"
+    "BouncyCastle.*",
+    "IdentityModel*",
+    "CommonServiceLocator*"
   ],
   "unknown_default": "decompile",
   "decompile_parallel_threshold": 10,
