@@ -22,14 +22,13 @@ Remove any existing `classification-manifest.json` from the profile directory.
 ### Expected Behavior
 
 1. process-drop starts and detects no existing manifest ("Starting process-drop from scratch.")
-2. All 7 stages run in order:
+2. All 6 base stages run in order:
    - pre-classify: third-party file deleted, manifest written
    - decompile: FakeSuite.dll decompiled
    - review-drop: index file created, classifier_results populated
    - generate-context: .ctx.md files generated
    - prune: non-reference binaries deleted
    - detect-databases: db-detection.json written
-   - generate-indexes: (not run, since --regenerate-indexes not provided)
 3. Each stage completes successfully and is marked in `completed_stages`
 4. Final summary shows all 6 stages completed:
    ```

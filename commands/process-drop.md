@@ -5,7 +5,6 @@ Orchestrator command that runs the full pipeline in the correct order. Calls eac
 ## Required inputs
 
 - `<profile>`: path to suite profile JSON
-- `<source-folder>`: path to the folder containing the dropped .NET assemblies
 
 ## Purpose
 
@@ -19,7 +18,7 @@ Single-command entry point that automates the full pipeline from a raw assembly 
 
 ## Pipeline stages (in order)
 
-1. `/pre-classify <profile> <source-folder>` — classify assemblies, resolve unknowns, write manifest
+1. `/pre-classify <profile>` — classify assemblies, resolve unknowns, write manifest
 2. `/decompile <profile>` — decompile suite assemblies
 3. `/review-drop <profile>` — classify relevance, write index tables
 4. `/generate-context <profile>` — generate .ctx.md files
@@ -82,7 +81,7 @@ Then exit without running anything and without modifying the manifest.
 For each stage in the pipeline:
 
 1. Print a start message: `Running <stage>...`
-2. Invoke that stage's command with the profile (and source-folder for pre-classify)
+2. Invoke that stage's command with the profile
 3. If the stage succeeds, mark it as completed and continue to the next
 4. If the stage hard-stops (returns a failure), print the error and stop the pipeline
 
@@ -122,3 +121,5 @@ process-drop failed at stage: <stage name>
 - The `--regenerate-indexes` flag is useful if the index format changes or needs to be rebuilt without re-running the classifier
 - Resume behavior allows the user to fix errors mid-pipeline and continue without reprocessing completed stages
 - This command does not validate that input assemblies are present; that check happens in `/pre-classify`
+- **Degraded resume**: If `prune` appears in `completed_stages` but `generate-context` does not (e.g., the run was interrupted mid-context-generation), resuming will attempt to run `generate-context`. However, if prune already deleted `.decompiled.cs` files marked `Stored in repo: No`, those assemblies will be silently skipped by generate-context (it logs each missing file as an error in the manifest). If full context generation is required, re-run the pipeline from scratch.
+- **Resume at pre-classify**: If `pre-classify` is not in `completed_stages` on resume, process-drop will re-invoke pre-classify. If a prior interrupted pre-classify already deleted some third-party files, pre-classify will re-run against the remaining files and proceed normally. The result may differ slightly from a completely fresh run if files were partially processed, but this is acceptable behavior.
