@@ -1,0 +1,7 @@
+# Ephemeral pipeline artifacts
+classification-manifest.json
+generation-errors.md
+
+# OS
+.DS_Store
+Thumbs.db
