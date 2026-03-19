@@ -5,3 +5,6 @@ generation-errors.md
 # OS
 .DS_Store
 Thumbs.db
+
+# Test output artifacts
+tests/fixtures/**/output/
