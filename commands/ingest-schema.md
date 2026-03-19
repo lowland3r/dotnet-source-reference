@@ -73,7 +73,7 @@ Assemblies that reference this table (from classifier_results):
 
 **Rules for Lookup Values section**:
 - Only include this section if the table has `is_lookup: true`
-- The table format uses the first key in each lookup value object as Code and the second key as Label
+- The table format uses the **value** of the first key in each lookup value object as Code and the **value** of the second key as Label
 - All lookup values from the `lookup_values` array are included
 - If `is_lookup: false` or absent, omit the entire Lookup Values section
 
@@ -94,8 +94,7 @@ Write `<index_output_path>/schema/index.md` with the following format:
 | Table | Database | Columns | Lookup | Referenced By |
 |-------|----------|---------|--------|---------------|
 | ordertable | FakeDB | 3 | No | FakeSuite.dll |
-| statuslookup | FakeDB | 4 | Yes | |
-| invoicetable | FakeDB | 5 | No | (none) |
+| statuslookup | FakeDB | 2 | Yes | (none) |
 ```
 
 **Rules**:
