@@ -1,3 +1,8 @@
+---
+description: Check and install ilspycmd decompiler
+allowed-tools: Bash
+---
+
 # bootstrap-ilspy
 
 Check whether ilspycmd is installed and install it if not.

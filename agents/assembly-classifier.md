@@ -1,3 +1,10 @@
+---
+name: assembly-classifier
+description: Use when assessing a single decompiled .NET assembly for relevance to suite business logic - evaluates API/business logic relevance, extracts key public types, identifies DB tables touched, and detects cross-component relationships. Dispatched by the review-drop command.
+tools: Read
+model: sonnet
+---
+
 # assembly-classifier
 
 Assess the relevance of a decompiled .NET assembly for API and business logic documentation. Called by the review-drop command.

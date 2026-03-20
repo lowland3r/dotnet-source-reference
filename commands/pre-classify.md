@@ -1,3 +1,9 @@
+---
+description: Classify assemblies and prune third-party binaries
+allowed-tools: Read, Write, Bash, Glob
+argument-hint: "<profile>"
+---
+
 # pre-classify
 
 Classify all assemblies in the source component folders against the suite profile. Immediately delete third-party binaries. Write classification-manifest.json.

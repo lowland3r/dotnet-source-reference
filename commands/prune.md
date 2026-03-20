@@ -1,3 +1,9 @@
+---
+description: Delete non-retained binaries and PDB files
+allowed-tools: Read, Write, Bash, Glob
+argument-hint: "<profile>"
+---
+
 # prune
 
 Delete non-reference files from component folders after decompilation and review. Retains only files marked "Stored in repo: Yes" in the index.

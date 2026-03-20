@@ -1,3 +1,8 @@
+---
+name: ilspy-runner
+description: Use when invoking ilspycmd to decompile .NET assemblies - provides correct invocation pattern, output validation, and error handling
+---
+
 # ilspy-runner
 
 Shared skill for invoking the ilspycmd decompiler. Use this skill whenever you need to run ilspycmd.

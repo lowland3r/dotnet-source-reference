@@ -1,3 +1,10 @@
+---
+name: context-distiller
+description: Use when generating a .ctx.md context document for a single decompiled .NET assembly - distills C# source into an LLM-optimized reference file covering public API, SQL usage, and cross-component relationships. Dispatched by the generate-context command.
+tools: Write, Bash
+model: sonnet
+---
+
 # context-distiller
 
 Distill a single decompiled C# source file into a focused, LLM-optimized context document. Called by the generate-context command, dispatched as one agent per assembly.

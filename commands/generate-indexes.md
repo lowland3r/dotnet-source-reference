@@ -1,3 +1,9 @@
+---
+description: Rebuild enriched human-readable index tables from classifier results
+allowed-tools: Read, Write, Bash
+argument-hint: "<profile>"
+---
+
 # generate-indexes
 
 Rebuild the index tables from `classifier_results` in the manifest without re-running the assembly-classifier. This is useful when the index format changes and needs to be rebuilt, the index file was accidentally deleted, or the user wants to regenerate indexes for a subset of assemblies.

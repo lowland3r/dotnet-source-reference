@@ -1,3 +1,10 @@
+---
+name: decompile-batch
+description: Use when decompiling a batch of .NET assemblies with ilspycmd - invokes ilspycmd for each assembly, validates output, and returns a JSON result array. Dispatched by the decompile command when parallel processing is needed for large drops.
+tools: Read, Bash
+model: sonnet
+---
+
 # decompile-batch
 
 Decompile a batch of .NET assemblies using ilspycmd. Called by the decompile command when parallel processing is needed.

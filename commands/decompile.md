@@ -1,3 +1,9 @@
+---
+description: Decompile passing assemblies to C# source
+allowed-tools: Read, Write, Bash
+argument-hint: "<profile>"
+---
+
 # decompile
 
 Decompile all suite-classified assemblies using ilspycmd. Reads classification-manifest.json to determine which assemblies to process. Supports parallel batch execution for large drops.

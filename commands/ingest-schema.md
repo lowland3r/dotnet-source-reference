@@ -1,3 +1,9 @@
+---
+description: Enrich context files using schema-enrichment.json from schema plugin
+allowed-tools: Read, Edit, Write, Bash, Glob
+argument-hint: "<profile> <schema-enrichment-path>"
+---
+
 # ingest-schema
 
 Enrich each assembly's `.ctx.md` file in-place with a `## DB Schema` section containing column definitions and lookup values sourced from the companion schema extraction output. Requires `database-context.json` to be present as a prerequisite guard.

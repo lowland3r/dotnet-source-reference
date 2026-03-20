@@ -1,3 +1,9 @@
+---
+description: Generate LLM-optimized .ctx.md files per assembly
+allowed-tools: Read, Write, Bash
+argument-hint: "<profile>"
+---
+
 # generate-context
 
 Generates `.ctx.md` context files for all relevant assemblies using the `context-distiller` agent. Each agent distills a decompiled assembly into a focused, LLM-optimized context document for downstream analysis or decision-making.

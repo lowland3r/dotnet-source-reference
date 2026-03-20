@@ -1,3 +1,9 @@
+---
+description: Detect database usage patterns and write database-context.json
+allowed-tools: Read, Write, Bash, Grep
+argument-hint: "<profile>"
+---
+
 # detect-databases
 
 Scan each assembly's decompiled source to determine how database tables are accessed. Produce `database-context.json` with per-table access patterns, inferred database groupings, probable lookup flags, and dynamic SQL warnings.

@@ -1,3 +1,9 @@
+---
+description: Orchestrate all pipeline stages for a new binary drop
+allowed-tools: Read, Write, Bash
+argument-hint: "<profile> [--regenerate-indexes] [--skip-prune] [--dry-run]"
+---
+
 # process-drop
 
 Orchestrator command that runs the full pipeline in the correct order. Calls each sub-command in sequence to automate assembly drop processing from raw binaries to a complete reference index with context files.

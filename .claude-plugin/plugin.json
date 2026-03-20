@@ -3,23 +3,20 @@
   "version": "0.1.0",
   "description": "Decompile .NET assemblies and generate LLM-optimized reference documentation for customization and integration development.",
   "commands": [
-    { "name": "bootstrap-ilspy",   "description": "Check and install ilspycmd decompiler" },
-    { "name": "pre-classify",      "description": "Classify assemblies and prune third-party binaries" },
-    { "name": "decompile",         "description": "Decompile passing assemblies to C# source" },
-    { "name": "review-drop",       "description": "Assess relevance of decompiled assemblies and update indexes" },
-    { "name": "prune",             "description": "Delete non-retained binaries and PDB files" },
-    { "name": "generate-context",  "description": "Generate LLM-optimized .ctx.md files per assembly" },
-    { "name": "generate-indexes",  "description": "[Optional] Generate enriched human-readable index tables" },
-    { "name": "detect-databases",  "description": "Detect database usage patterns and write database-context.json" },
-    { "name": "ingest-schema",     "description": "Enrich context files using schema-enrichment.json from schema plugin" },
-    { "name": "process-drop",      "description": "Orchestrate all pipeline stages for a new binary drop" }
+    "./commands/bootstrap-ilspy.md",
+    "./commands/pre-classify.md",
+    "./commands/decompile.md",
+    "./commands/review-drop.md",
+    "./commands/prune.md",
+    "./commands/generate-context.md",
+    "./commands/generate-indexes.md",
+    "./commands/detect-databases.md",
+    "./commands/ingest-schema.md",
+    "./commands/process-drop.md"
   ],
   "agents": [
-    { "name": "assembly-classifier", "description": "Assess relevance of a decompiled .NET assembly" },
-    { "name": "context-distiller",   "description": "Produce LLM-optimized context documentation for an assembly" },
-    { "name": "decompile-batch",     "description": "Decompile a batch of assemblies using ilspycmd" }
-  ],
-  "skills": [
-    { "name": "ilspy-runner", "description": "Shared ILSpy CLI invocation logic" }
+    "./agents/assembly-classifier.md",
+    "./agents/context-distiller.md",
+    "./agents/decompile-batch.md"
   ]
 }

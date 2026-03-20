@@ -1,3 +1,9 @@
+---
+description: Assess relevance of decompiled assemblies and update indexes
+allowed-tools: Read, Write, Bash
+argument-hint: "<profile>"
+---
+
 # review-drop
 
 Assess each decompiled assembly for relevance using the assembly-classifier agent. Create or update the index table for each component. All component sources are loaded together to enable cross-component analysis.
