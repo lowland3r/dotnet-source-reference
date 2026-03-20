@@ -1,22 +1,5 @@
 {
   "name": "dotnet-source-reference",
   "version": "0.1.0",
-  "description": "Decompile .NET assemblies and generate LLM-optimized reference documentation for customization and integration development.",
-  "commands": [
-    "./commands/bootstrap-ilspy.md",
-    "./commands/pre-classify.md",
-    "./commands/decompile.md",
-    "./commands/review-drop.md",
-    "./commands/prune.md",
-    "./commands/generate-context.md",
-    "./commands/generate-indexes.md",
-    "./commands/detect-databases.md",
-    "./commands/ingest-schema.md",
-    "./commands/process-drop.md"
-  ],
-  "agents": [
-    "./agents/assembly-classifier.md",
-    "./agents/context-distiller.md",
-    "./agents/decompile-batch.md"
-  ]
+  "description": "Decompile .NET assemblies and generate LLM-optimized reference documentation for customization and integration development."
 }
