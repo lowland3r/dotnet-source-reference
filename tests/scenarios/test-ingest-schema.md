@@ -2,193 +2,220 @@
 
 ## Setup
 
-Profile: `tests/fixtures/minimal-suite/test-profile.json`
+The following files must be present before running any test case:
 
-Schema enrichment: `tests/fixtures/schema-fixture/schema-enrichment.json`
+- Suite profile: `tests/fixtures/minimal-suite/test-profile.json`
+  - `context_output_path` is `"output/context"` — resolved as `tests/fixtures/minimal-suite/output/context/`
+- Schema enrichment: `tests/fixtures/schema-fixture/schema-enrichment.json`
+  - Contains database `FakeDB` with tables `ordertable` (3 columns, not lookup) and `statuslookup` (2 columns, is lookup, 3 lookup values)
+- Command specification: `commands/ingest-schema.md`
 
-Manifest: exists, `completed_stages` includes `"review-drop"`, and `classifier_results` contains:
-- `FakeSuite.dll` (component: main) with `db_tables: ["ordertable", "orderline"]`
+For test cases that test normal enrichment, you will need a `.ctx.md` file in the resolved `context_output_path`. Use the content of `tests/fixtures/minimal-suite/FakeSuite.ctx.md` as the template:
 
-The schema-enrichment.json fixture defines two tables in the FakeDB database:
-- `ordertable`: 3 columns, `is_lookup: false`, no lookup values
-- `statuslookup`: 2 columns, `is_lookup: true`, 3 lookup values (OP, CL, HD)
+- Place a copy at `tests/fixtures/minimal-suite/output/context/FakeSuite.ctx.md`
+- The frontmatter `db_tables` field lists `ordertable` and `statuslookup`
+- The file does NOT contain a `## DB Schema` section at the start of each test case (reset to the un-enriched state)
 
-## Test Case A: Normal run
+Each test case defines its own `classification-manifest.json` and, where applicable, `database-context.json`. These are placed in `tests/fixtures/minimal-suite/`. After each test case, remove generated outputs and reset fixture files to their original state before proceeding.
 
-### Setup
-
-- Profile and manifest present and valid
-- Schema enrichment file exists and is readable
-- Classifier results contain FakeSuite.dll with references to ordertable and orderline
-
-### Expected Behavior
-
-1. Schema directory `<index_output_path>/schema` is created
-2. Database subdirectory `<index_output_path>/schema/fakedb` is created
-3. `ordertable.md` is written to `<index_output_path>/schema/fakedb/ordertable.md` with:
-   - Header showing table name and database
-   - Columns section with all 3 columns (fcorderid, fccustid, fcstatus) and their types, nullability, and notes
-   - NO Lookup Values section (is_lookup: false)
-   - Cross-References section listing `FakeSuite.dll (component: main)`
-4. `statuslookup.md` is written to `<index_output_path>/schema/fakedb/statuslookup.md` with:
-   - Header showing table name and database
-   - Columns section with both columns
-   - Lookup Values section with all 3 lookup values (OP: Open, CL: Closed, HD: On Hold)
-   - Cross-References section saying "No assemblies in the suite reference this table."
-5. Schema index `<index_output_path>/schema/index.md` is written with a table containing both tables, sorted alphabetically
-6. Manifest's `completed_stages` is updated to include `"ingest-schema"`
-7. Manifest is written back to disk
-8. Summary output shows: Databases: 1, Tables: 2, file paths, index path
-
-### Pass Criteria
-
-- All three markdown files are created with correct structure
-- Columns table includes all fields with proper formatting
-- Lookup Values section appears only in statuslookup.md, not in ordertable.md
-- Cross-References correctly identifies which assemblies use each table
-- Schema index lists both tables in alphabetical order
-- Manifest is updated correctly
-- Summary output contains all expected information
-
-## Test Case B: Lookup table with lookup values
+## Test Case A: Normal enrichment — correct columns and lookup values
 
 ### Setup
 
-- Same as Test Case A
-- Schema enrichment fixture specifies statuslookup with `is_lookup: true` and 3 lookup values
+Create `classification-manifest.json` in `tests/fixtures/minimal-suite/` with:
+
+- `schema_version: "1.0"`
+- `suite: "Fake Test Suite"`
+- `completed_stages: ["pre-classify", "decompile", "review-drop", "detect-databases"]`
+
+Place `tests/fixtures/minimal-suite/database-context.json` (from Phase 3 fixtures) in `tests/fixtures/minimal-suite/`.
+
+Place a fresh copy of the un-enriched `FakeSuite.ctx.md` at `tests/fixtures/minimal-suite/output/context/FakeSuite.ctx.md`.
+
+Run `ingest-schema` with profile `tests/fixtures/minimal-suite/test-profile.json` and schema enrichment path `tests/fixtures/schema-fixture/schema-enrichment.json`, following `commands/ingest-schema.md`.
 
 ### Expected Behavior
 
-1. `statuslookup.md` includes Lookup Values section
-2. Lookup Values table has correct headers and all 3 rows:
-   - OP | Open
-   - CL | Closed
-   - HD | On Hold
-3. Columns in statuslookup match the fixture exactly
+1. The command validates `database-context.json` — `schema_version: "1.0"` passes
+2. The command validates `schema-enrichment.json` — `schema_version: "1.0"` passes
+3. The command finds `output/context/FakeSuite.ctx.md`, reads `db_tables: [ordertable, statuslookup]` from frontmatter
+4. It looks up `ordertable` in `schema-enrichment.json` and builds a columns table with 3 rows
+5. It looks up `statuslookup` and builds a columns table with 2 rows plus a `**Lookup values:**` subsection with 3 rows (OP/Open, CL/Closed, HD/On Hold)
+6. A `## DB Schema` section is appended to `FakeSuite.ctx.md` containing both table subsections
+7. The manifest gains `"ingest-schema"` in `completed_stages`
 
 ### Pass Criteria
 
-- Lookup Values section is present for is_lookup: true
-- All lookup values from fixture appear in the table
-- Section format matches specification exactly
+- `output/context/FakeSuite.ctx.md` contains a `## DB Schema` section — verifies AC2.1
+- The `### ordertable` subsection contains a markdown table with columns `Column`, `Type`, `Nullable`, `Notes` and rows for `fcorderid`, `fccustid`, `fcstatus` with correct values from `schema-enrichment.json` — verifies AC2.2
+- The `### statuslookup` subsection contains a `**Lookup values:**` block with a table listing `OP / Open`, `CL / Closed`, `HD / On Hold` — verifies AC2.3
+- The existing file sections (`## Summary`, `## Public API`, `## SQL / DB Usage`, `## Cross-Component References`) are preserved unchanged — verifies AC2.1 (in-place enrichment, not replacement)
 
-## Test Case C: Table with no assembly references
+## Test Case B: Idempotency — second run replaces, does not duplicate
 
 ### Setup
 
-- Same as Test Case A
-- The statuslookup table in schema-enrichment.json has no corresponding entries in classifier_results db_tables
+Use the same manifest and `database-context.json` from Test Case A. The `FakeSuite.ctx.md` should already contain a `## DB Schema` section from Test Case A (do not reset it).
+
+Note: This test case depends on Test Case A having completed successfully. If Test Case A did not produce a `## DB Schema` section, manually append one to `output/context/FakeSuite.ctx.md` before running this test case.
+
+Run `ingest-schema` again with the same arguments.
 
 ### Expected Behavior
 
-1. `statuslookup.md` is written successfully (not an error)
-2. Cross-References section reads exactly: "No assemblies in the suite reference this table."
-3. In schema/index.md, the statuslookup row shows blank in the "Referenced By" column as "(none)"
+1. The command reads `FakeSuite.ctx.md` and finds an existing `## DB Schema` section
+2. It replaces the section with a freshly generated one (same content)
+3. Only one `## DB Schema` heading appears in the file after the second run
 
 ### Pass Criteria
 
-- Tables without assembly references are documented anyway (not errors)
-- Cross-References section uses exact wording for unreferenced tables
-- Schema index shows "(none)" for unreferenced tables
+- `output/context/FakeSuite.ctx.md` contains exactly one `## DB Schema` heading (not two) — verifies AC2.4
+- The content of the `## DB Schema` section is correct (same as after the first run) — verifies AC2.4
 
-## Test Case D: Table with multiple assembly references
+## Test Case C: Table not in schema — informational note, .ctx.md unchanged for unknown table
 
 ### Setup
 
-- Manifest's classifier_results contains two assemblies with db_tables:
-  - `FakeSuite.dll` (component: main) with `db_tables: ["ordertable", "orderline"]`
-  - `ReportService.dll` (component: reporting) with `db_tables: ["ordertable", "reportcache"]`
-- Schema enrichment contains only ordertable
+Create a fresh `.ctx.md` at `tests/fixtures/minimal-suite/output/context/FakeSuite.ctx.md` with:
+
+- YAML frontmatter containing `db_tables: [ordertable, unknowntable]`
+- `unknowntable` is a table name that does NOT exist in `schema-enrichment.json`
+- Use the same body content as `tests/fixtures/minimal-suite/FakeSuite.ctx.md` but substitute `unknowntable` for `statuslookup` in the `db_tables` list
+
+Use the same manifest and `database-context.json` from Test Case A.
+
+Run `ingest-schema` with the same arguments.
 
 ### Expected Behavior
 
-1. `ordertable.md` Cross-References section lists both assemblies:
-   - `FakeSuite.dll (component: main)`
-   - `ReportService.dll (component: reporting)`
-2. Assemblies are sorted alphabetically in the list
-3. In schema/index.md, the ordertable row shows both assembly names comma-separated in Referenced By
+1. The command finds `ordertable` in `schema-enrichment.json` and enriches it normally
+2. The command does not find `unknowntable` in `schema-enrichment.json`
+3. An informational note is included in the summary report: e.g., `Table 'unknowntable' in FakeSuite.ctx.md not found in schema-enrichment.json — skipped`
+4. The command does NOT hard stop
+5. `output/context/FakeSuite.ctx.md` gets a `## DB Schema` section with only the `### ordertable` subsection (no `### unknowntable` subsection)
 
 ### Pass Criteria
 
-- Multiple assembly references are all listed
-- Assemblies are sorted alphabetically
-- Both are present in both the table markdown and index
+- The command completes without a hard stop — verifies AC2.5 (not a fatal error)
+- The summary output includes an informational note about `unknowntable` — verifies AC2.5
+- `output/context/FakeSuite.ctx.md` contains `### ordertable` in the `## DB Schema` section — verifies AC2.5
+- `output/context/FakeSuite.ctx.md` does NOT contain `### unknowntable` in the `## DB Schema` section — verifies AC2.5
 
-## Test Case E: Missing schema-enrichment.json
+## Test Case D: Missing database-context.json hard stop
 
 ### Setup
 
-- Profile exists
-- `<schema-enrichment-path>` points to a non-existent file
+Create `classification-manifest.json` in `tests/fixtures/minimal-suite/` (as in Test Case A).
+
+Do NOT place `database-context.json` in `tests/fixtures/minimal-suite/`. If it exists from a previous test case, remove it.
+
+Run `ingest-schema` with profile `tests/fixtures/minimal-suite/test-profile.json` and schema enrichment path `tests/fixtures/schema-fixture/schema-enrichment.json`.
 
 ### Expected Behavior
 
-- Command hard stops with error message that includes:
-  - "schema-enrichment.json" or the provided path
-  - The reason (file not found, unreadable, etc.)
-- No output files are created
-- Manifest is not modified
+1. The command looks for `database-context.json` in the profile directory and does not find it
+2. It halts immediately with a hard stop error message referencing `/detect-databases`
+3. No `.ctx.md` files are modified
 
 ### Pass Criteria
 
-- Missing schema file triggers hard stop before any output
-- Error message is descriptive and includes the path
+- The command halts before modifying any files — verifies AC2.6
+- The error message contains a reference to `/detect-databases` — verifies AC2.6
 
-## Test Case F: Invalid schema-enrichment.json format
+## Test Case E: Missing schema-enrichment.json hard stop
 
 ### Setup
 
-- Schema enrichment file exists but is invalid JSON, or lacks `databases` array, or `databases` is empty
+Place `tests/fixtures/minimal-suite/database-context.json` (from Phase 3 fixtures).
+Create `classification-manifest.json` (as in Test Case A).
+
+Run `ingest-schema` with profile `tests/fixtures/minimal-suite/test-profile.json` and a schema enrichment path that does NOT exist (e.g., `tests/fixtures/schema-fixture/nonexistent-schema.json`).
 
 ### Expected Behavior
 
-- Command hard stops with descriptive error
-- Message indicates the validation failure
-- No output files are created
+1. The command loads and validates `database-context.json` successfully
+2. It attempts to load `schema-enrichment.json` at the specified path and does not find it
+3. It halts with a descriptive error message that includes the attempted file path
+4. No `.ctx.md` files are modified
 
 ### Pass Criteria
 
-- Invalid format triggers hard stop
-- Error message is clear about what is wrong
+- The command halts before modifying any files — verifies AC2.7
+- The error message includes the attempted path (e.g., `tests/fixtures/schema-fixture/nonexistent-schema.json`) — verifies AC2.7
 
-## Test Case G: Missing manifest
+## Test Case F: Wrong schema_version in schema-enrichment.json hard stop
 
 ### Setup
 
-- Profile exists
-- `classification-manifest.json` does not exist
-- Schema enrichment file is valid
+Create a temporary `schema-enrichment.json` identical to `tests/fixtures/schema-fixture/schema-enrichment.json` but with `schema_version` set to `"2.0"` instead of `"1.0"`. Place it at a temporary path (e.g., `tests/fixtures/schema-fixture/schema-enrichment-v2.json`).
+
+Place `tests/fixtures/minimal-suite/database-context.json` (from Phase 3 fixtures).
+Create `classification-manifest.json` (as in Test Case A).
+
+Run `ingest-schema` with profile `tests/fixtures/minimal-suite/test-profile.json` and schema enrichment path pointing to the `schema_version: "2.0"` file.
 
 ### Expected Behavior
 
-- Command hard stops with message: "Run /pre-classify before /ingest-schema."
-- No output files are created
+1. The command loads and validates `database-context.json` successfully
+2. It loads `schema-enrichment.json` and detects `schema_version: "2.0"` instead of `"1.0"`
+3. It halts with a hard stop error message mentioning the version mismatch
+4. No `.ctx.md` files are modified
 
 ### Pass Criteria
 
-- Missing manifest triggers hard stop before processing schema
-- Hard stop message is exact as specified
+- The command halts before modifying any files — verifies AC2.8
+- The error message mentions the version mismatch — verifies AC2.8
 
-## Test Case H: Schema index format
+## Test Case G: Wrong schema_version in database-context.json hard stop
 
 ### Setup
 
-- Same as Test Case A
-- Two tables: ordertable and statuslookup
+Create a temporary `database-context.json` with `schema_version: "2.0"` (all other fields can be minimal). Place it at `tests/fixtures/minimal-suite/database-context.json`.
+Create `classification-manifest.json` (as in Test Case A).
+
+Run `ingest-schema` with profile `tests/fixtures/minimal-suite/test-profile.json` and schema enrichment path `tests/fixtures/schema-fixture/schema-enrichment.json`.
 
 ### Expected Behavior
 
-1. Schema index file has a markdown table with headers: Table, Database, Columns, Lookup, Referenced By
-2. Rows are sorted alphabetically by table name:
-   - ordertable first (alphabetically)
-   - statuslookup second
-3. Column counts are correct (3 for ordertable, 2 for statuslookup)
-4. Lookup column shows "No" for ordertable, "Yes" for statuslookup
-5. Referenced By shows appropriate assembly or "(none)"
+1. The command loads `database-context.json` and detects `schema_version: "2.0"` instead of `"1.0"`
+2. It halts with a hard stop error message mentioning the version mismatch
+3. `schema-enrichment.json` is never loaded
+4. No `.ctx.md` files are modified
 
 ### Pass Criteria
 
-- Index table has correct structure and headers
-- Rows are sorted alphabetically by table name
-- All columns are populated correctly
-- "(none)" appears for unreferenced tables
+- The command halts before loading `schema-enrichment.json` or modifying any files — verifies AC2.9
+- The error message mentions the version mismatch — verifies AC2.9
+
+## Self-Verification
+
+After completing all test cases above, evaluate each criterion and output a PASS/FAIL verdict using this exact format:
+
+```
+PASS: db-context-correction.AC2.1 — <criterion text>
+FAIL: db-context-correction.AC2.3 — <criterion text> — Reason: <brief explanation>
+```
+
+Criteria to evaluate (one line each):
+
+- db-context-correction.AC2.1: `.ctx.md` file with `db_tables` gets `## DB Schema` section appended — verified by Test Case A
+- db-context-correction.AC2.2: DB Schema section contains correct column table (name, type, nullable, notes) — verified by Test Case A
+- db-context-correction.AC2.3: Lookup table (`is_lookup: true`) gets Lookup Values subsection with all `lookup_values` entries — verified by Test Case A (`statuslookup`)
+- db-context-correction.AC2.4: Running ingest-schema twice does not duplicate the `## DB Schema` section — second run replaces it — verified by Test Case B
+- db-context-correction.AC2.5: Table in `db_tables` not found in `schema-enrichment.json` → informational note in report only; `.ctx.md` unchanged for that table — verified by Test Case C
+- db-context-correction.AC2.6: Missing `database-context.json` → hard stop referencing `/detect-databases` — verified by Test Case D
+- db-context-correction.AC2.7: Missing `schema-enrichment.json` → hard stop with descriptive error including attempted path — verified by Test Case E
+- db-context-correction.AC2.8: `schema-enrichment.json` `schema_version` ≠ `"1.0"` → hard stop — verified by Test Case F
+- db-context-correction.AC2.9: `database-context.json` `schema_version` ≠ `"1.0"` → hard stop — verified by Test Case G
+
+After evaluating all criteria, output a summary line:
+
+```
+OVERALL: PASS (9/9)
+```
+
+or, if any criteria failed:
+
+```
+OVERALL: FAIL (N/9 passed) — failing criteria: <comma-separated list of criterion IDs>
+```
