@@ -14,3 +14,9 @@ tests/fixtures/**/output/
 
 # Git worktrees
 .worktrees/
+
+# Planning docs
+docs/
+
+# Extraction profiles
+config/profiles/*.json
