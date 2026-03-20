@@ -22,7 +22,7 @@ Each markdown file is a complete command specification that Claude executes dire
 
 - `detect-databases` scans decompiled source (not just classifier metadata): Enables access pattern detection, dynamic SQL warnings, and connection string inference that pure metadata aggregation cannot provide
 - `ingest-schema` enriches `.ctx.md` in-place (no separate schema/ directory): Keeps all assembly context in one file, reducing token cost when Claude reads context
-- `database-context.json` replaces `db-detection.json`: Richer schema with `access_patterns`, `probable_lookup`, `unresolved_references`, and `gaps`
+- `database-context.json` is the current output format: Richer schema with `access_patterns`, `probable_lookup`, `unresolved_references`, and `gaps`
 - `ingest-schema` guards on `database-context.json` existence (not content): Enforces pipeline ordering without coupling to detection output format
 
 ## Invariants
@@ -30,7 +30,7 @@ Each markdown file is a complete command specification that Claude executes dire
 - `detect-databases` requires `"review-drop"` in `completed_stages`
 - `ingest-schema` requires `database-context.json` to exist with `schema_version: "1.0"`
 - `process-drop` does NOT include `ingest-schema` (it requires external schema input)
-- Output file is `database-context.json`, never `db-detection.json`
+- Output file is always `database-context.json`
 
 ## Key Files
 
