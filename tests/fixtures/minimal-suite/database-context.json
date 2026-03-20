@@ -1,0 +1,27 @@
+{
+  "schema_version": "1.0",
+  "generated_at": "2026-03-19T00:00:00Z",
+  "suite": "Fake Test Suite",
+  "components_analyzed": ["main"],
+  "databases": [
+    {
+      "name": "FakeDB",
+      "tables": [
+        {
+          "name": "ordertable",
+          "referenced_in": ["FakeSuite.dll"],
+          "access_patterns": ["SELECT", "INSERT"],
+          "probable_lookup": false
+        },
+        {
+          "name": "statuslookup",
+          "referenced_in": ["FakeSuite.dll"],
+          "access_patterns": ["SELECT"],
+          "probable_lookup": true
+        }
+      ],
+      "unresolved_references": []
+    }
+  ],
+  "gaps": []
+}
