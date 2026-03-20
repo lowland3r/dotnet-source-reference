@@ -1,6 +1,6 @@
 ---
-description: Delete non-retained binaries and PDB files
-allowed-tools: Read, Write, Bash, Glob
+name: prune
+description: Use when deleting non-retained binaries, PDB files, and irrelevant decompiled sources after review-drop has completed - retains only files marked "Stored in repo: Yes" in the index
 argument-hint: "<profile>"
 ---
 

@@ -1,6 +1,6 @@
 ---
-description: Classify assemblies and prune third-party binaries
-allowed-tools: Read, Write, Bash, Glob
+name: pre-classify
+description: Use when starting a new binary drop to classify assemblies against a suite profile, prune third-party binaries, and write classification-manifest.json - first stage of the pipeline
 argument-hint: "<profile>"
 ---
 

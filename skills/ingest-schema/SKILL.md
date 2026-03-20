@@ -1,6 +1,6 @@
 ---
-description: Enrich context files using schema-enrichment.json from schema plugin
-allowed-tools: Read, Edit, Write, Bash, Glob
+name: ingest-schema
+description: Use when enriching .ctx.md files in-place with DB Schema sections containing column definitions and lookup values from schema-enrichment.json - requires detect-databases to have completed
 argument-hint: "<profile> <schema-enrichment-path>"
 ---
 

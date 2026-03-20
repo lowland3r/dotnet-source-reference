@@ -1,6 +1,6 @@
 ---
-description: Rebuild enriched human-readable index tables from classifier results
-allowed-tools: Read, Write, Bash
+name: generate-indexes
+description: Use when rebuilding human-readable index tables from classifier_results without re-running the assembly-classifier - useful when the index format changes, an index file is lost, or a subset needs regeneration
 argument-hint: "<profile>"
 ---
 

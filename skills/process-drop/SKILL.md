@@ -1,6 +1,6 @@
 ---
-description: Orchestrate all pipeline stages for a new binary drop
-allowed-tools: Read, Write, Bash
+name: process-drop
+description: Use when orchestrating all pipeline stages for a new binary drop from start to finish - runs pre-classify, decompile, review-drop, generate-context, prune, and detect-databases in sequence with resume support
 argument-hint: "<profile> [--regenerate-indexes] [--skip-prune] [--dry-run]"
 ---
 

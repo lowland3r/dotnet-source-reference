@@ -1,18 +1,17 @@
 # dotnet-source-reference
 
-Last verified: 2026-03-19
+Last verified: 2026-03-20
 
 ## What This Is
 
-Claude plugin that decompiles .NET assemblies and generates LLM-optimized reference documentation. Commands, agents, and skills are markdown specs executed by Claude -- there is no traditional source code.
+Claude plugin that decompiles .NET assemblies and generates LLM-optimized reference documentation. Skills, agents, and shared logic are markdown specs executed by Claude -- there is no traditional source code.
 
 ## Structure
 
-- `commands/` - Pipeline command specs (markdown). Each file defines inputs, steps, outputs, and error handling for one CLI command.
-- `agents/` - Agent specs dispatched by commands (assembly-classifier, context-distiller, decompile-batch)
-- `skills/` - Shared logic specs (ilspy-runner)
+- `skills/` - Pipeline skill specs (markdown). Each subdirectory contains a `SKILL.md` defining inputs, steps, outputs, and error handling for one pipeline stage.
+- `agents/` - Agent specs dispatched by skills (assembly-classifier, context-distiller, decompile-batch)
 - `config/` - Suite profile schema and example profiles
-- `tests/scenarios/` - Self-verifying test scenarios (markdown). Each `test-<command>.md` tests one command.
+- `tests/scenarios/` - Self-verifying test scenarios (markdown). Each `test-<skill>.md` tests one skill.
 - `tests/fixtures/` - Test fixture data (JSON, .cs, .ctx.md files)
 - `docs/` - Design plans and implementation plans
 
@@ -37,7 +36,7 @@ Commands run in this sequence (managed by `process-drop`):
 
 ## Conventions
 
-- Command specs are self-contained: each includes inputs, steps, output schema, and error handling
+- Skill specs are self-contained: each includes inputs, steps, output schema, and error handling
 - Test scenarios are self-verifying: they include fixture data, expected outputs, and verification criteria
 - Pipeline ordering is enforced via `completed_stages` in the manifest
 - Table names are normalised: lowercase, no schema prefix, no brackets

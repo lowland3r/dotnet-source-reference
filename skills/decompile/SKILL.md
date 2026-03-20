@@ -1,6 +1,6 @@
 ---
-description: Decompile passing assemblies to C# source
-allowed-tools: Read, Write, Bash
+name: decompile
+description: Use when suite-classified assemblies need to be decompiled to C# source after pre-classify has completed - reads classification-manifest.json and runs ilspycmd
 argument-hint: "<profile>"
 ---
 

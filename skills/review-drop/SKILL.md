@@ -1,6 +1,6 @@
 ---
-description: Assess relevance of decompiled assemblies and update indexes
-allowed-tools: Read, Write, Bash
+name: review-drop
+description: Use when assessing relevance of decompiled assemblies and updating index tables after decompilation - dispatches assembly-classifier agents and populates classifier_results in the manifest
 argument-hint: "<profile>"
 ---
 

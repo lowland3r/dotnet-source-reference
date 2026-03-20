@@ -1,6 +1,6 @@
 ---
-description: Check and install ilspycmd decompiler
-allowed-tools: Bash
+name: bootstrap-ilspy
+description: Use when ilspycmd needs to be checked or installed before running the decompile pipeline - verifies dotnet SDK is present and installs ilspycmd if missing
 ---
 
 # bootstrap-ilspy

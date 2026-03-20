@@ -1,6 +1,6 @@
 ---
-description: Generate LLM-optimized .ctx.md files per assembly
-allowed-tools: Read, Write, Bash
+name: generate-context
+description: Use when generating LLM-optimized .ctx.md files per assembly after review-drop has completed - dispatches context-distiller agents in parallel for each successfully classified assembly
 argument-hint: "<profile>"
 ---
 

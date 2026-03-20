@@ -1,6 +1,6 @@
 ---
-description: Detect database usage patterns and write database-context.json
-allowed-tools: Read, Write, Bash, Grep
+name: detect-databases
+description: Use when scanning decompiled source for database usage patterns and generating database-context.json - requires review-drop to have completed; produces per-table access patterns, database groupings, and dynamic SQL warnings
 argument-hint: "<profile>"
 ---
 
