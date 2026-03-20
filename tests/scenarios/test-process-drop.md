@@ -28,7 +28,7 @@ Remove any existing `classification-manifest.json` from the profile directory.
    - review-drop: index file created, classifier_results populated
    - generate-context: .ctx.md files generated
    - prune: non-reference binaries deleted
-   - detect-databases: db-detection.json written
+   - detect-databases: database-context.json written
 3. Each stage completes successfully and is marked in `completed_stages`
 4. Final summary shows all 6 stages completed:
    ```
@@ -38,13 +38,13 @@ Remove any existing `classification-manifest.json` from the profile directory.
      Output:
        Index: <index_output_path>
        Context: <context_output_path>
-       DB detection: <profile dir>/db-detection.json
+       DB detection: <profile dir>/database-context.json
    ```
 5. `classification-manifest.json` exists with `completed_stages: ["pre-classify", "decompile", "review-drop", "generate-context", "prune", "detect-databases"]`
 6. All expected output files exist:
    - Index tables (index-<component>.md)
    - Context files (.ctx.md)
-   - db-detection.json
+   - database-context.json
    - classification-manifest.json
 
 ### Pass Criteria
@@ -81,7 +81,7 @@ This simulates a user who ran process-drop earlier, completed classification and
      Output:
        Index: <index_output_path>
        Context: <context_output_path>
-       DB detection: <profile dir>/db-detection.json
+       DB detection: <profile dir>/database-context.json
    ```
 
 ### Pass Criteria
@@ -178,7 +178,7 @@ Fresh run. Invoke process-drop with `--regenerate-indexes` flag.
      Output:
        Index: <index_output_path>
        Context: <context_output_path>
-       DB detection: <profile dir>/db-detection.json
+       DB detection: <profile dir>/database-context.json
    ```
 5. Manifest includes "generate-indexes" in completed_stages
 
