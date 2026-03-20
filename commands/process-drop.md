@@ -98,7 +98,7 @@ process-drop complete.
   Output:
     Index: <index_output_path from profile>
     Context: <context_output_path from profile>
-    DB detection: <path to db-detection.json in profile directory>
+    DB detection: <path to database-context.json in profile directory>
 ```
 
 If a stage failed, instead output:
